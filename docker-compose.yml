@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: .
+      dockerfile: ./api-gateway/Dockerfile
+    depends_on:
+      - auth-svc
+    ports:
+      - 3333:3333
+    volumes:
+      - ./api-gateway:/app
+
+  auth-svc:
+    container_name: auth-svc
+    build:
+      context: .
+      dockerfile: ./auth-svc/Dockerfile
+    depends_on:
+      - mongo
+    ports:
+      - 50051:50051
+    volumes:
+      - ./auth-svc:/app
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root

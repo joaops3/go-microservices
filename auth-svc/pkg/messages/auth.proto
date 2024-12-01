@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package pb;
+
+option go_package = "./pb";
+
+
+
+message User {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string password = 4;
+    int64 created_at = 5;
+    int64 updated_at = 6;
+}
+
+message SignUpRequest {
+    string name = 1;
+    string email = 2;
+    string password = 3;
+}
+
+message SignUpResponse {
+    string name = 1;
+    string email = 2;
+}
+
+message SignInRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message SignInResponse {
+    string name = 1;
+    string email = 2;
+}
+
+message DeleteUserRequest {
+    string id = 1;
+}
+
+service AuthService {
+    rpc SignUp(SignUpRequest) returns (SignUpResponse);
+    rpc SignIn(SignInRequest) returns (SignInResponse);
+    rpc UpdateUser(User) returns (User);
+    rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+}
