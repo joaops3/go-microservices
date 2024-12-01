@@ -10,3 +10,5 @@
 .env
 
 mongodb_data
+
+tmp

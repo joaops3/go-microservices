@@ -74,16 +74,9 @@ func (r *RequireAuthMiddleware) RequireAuth(c *gin.Context) {
 			return 
 		}
 
-		if err != nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return 
-		}
+		
 
-		if user == nil {
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return 
-		}
-
+		
 		c.Set("user", user)
 	} else {
 		c.AbortWithStatus(http.StatusUnauthorized)

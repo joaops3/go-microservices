@@ -5,6 +5,7 @@ import (
 	"go-microservices-grpc/auth-svc/pkg/data/db"
 	"go-microservices-grpc/auth-svc/pkg/pb"
 	"go-microservices-grpc/auth-svc/pkg/services"
+	"os"
 
 	"net"
 
@@ -19,6 +20,7 @@ func main() {
 	if err != nil {
 	  panic(err.Error())
 	}
+	
 	dbClient, err := db.InitDb()
 	if err != nil {
 		panic(err)
@@ -35,7 +37,8 @@ func main() {
 
 	reflection.Register(grpcServer)
 
-	listen, err := net.Listen("tcp", ":50051")
+	PORT := os.Getenv("PORT")
+	listen, err := net.Listen("tcp", PORT)
 
 	if err != nil {
 		panic(err)
