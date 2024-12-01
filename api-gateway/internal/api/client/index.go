@@ -14,7 +14,7 @@ type ServiceClient struct {
 
 type Config struct {
 	Port          string `mapstructure:"AUTH_PORT"`
-	AuthSuvUrl    string `mapstructure:"AUTH_SUV_URL"`
+	AuthSuvUrl    string `mapstructure:"AUTH_SVC_URL"`
 }
 
 func InitServiceClient(c *Config) pb.AuthServiceClient {
