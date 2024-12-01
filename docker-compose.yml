@@ -10,8 +10,10 @@ services:
       - auth-svc
     ports:
       - 3333:3333
+    env_file:
+      - ./api-gateway/.env
     volumes:
-      - ./api-gateway:/app
+      - ./api-gateway:/app/api-gateway
 
   auth-svc:
     container_name: auth-svc
@@ -22,8 +24,10 @@ services:
       - mongo
     ports:
       - 50051:50051
+    env_file:
+      - ./auth-svc/.env
     volumes:
-      - ./auth-svc:/app
+      - ./auth-svc:/app/auth-svc
 
   mongo:
     container_name: mongo

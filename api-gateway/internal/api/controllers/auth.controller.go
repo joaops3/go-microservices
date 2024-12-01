@@ -8,11 +8,11 @@ import (
 )
 
 type AuthController struct {
-	AuthService pb.AuthServiceClient
+	AuthClient pb.AuthServiceClient
 }
 
 func InitAuthController(authService pb.AuthServiceClient) *AuthController {
-	controller := &AuthController{AuthService: authService}
+	controller := &AuthController{AuthClient: authService}
 	return controller
 }
 
@@ -33,7 +33,7 @@ func (c *AuthController) SignIn(ctx *gin.Context){
         return 
     }
 
-    data, err := c.AuthService.SignIn(ctx, dto.ToProtoBuff())
+    data, err := c.AuthClient.SignIn(ctx, dto.ToProtoBuff())
 
     if err != nil {
        sendError(ctx, 400, err.Error())
@@ -62,7 +62,7 @@ func (c *AuthController) SignUp(ctx *gin.Context){
         return 
     }
 
-    data, err := c.AuthService.SignUp(ctx, dto.ToProtoBuff())
+    data, err := c.AuthClient.SignUp(ctx, dto.ToProtoBuff())
 
     if err != nil {
        sendError(ctx, 400, err.Error())

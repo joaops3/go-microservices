@@ -42,9 +42,14 @@ message DeleteUserRequest {
     string id = 1;
 }
 
+message ValidateTokenRequest {
+    string token = 1;
+}
+
 service AuthService {
     rpc SignUp(SignUpRequest) returns (SignUpResponse);
     rpc SignIn(SignInRequest) returns (SignInResponse);
     rpc UpdateUser(User) returns (User);
     rpc DeleteUser(DeleteUserRequest) returns (google.protobuf.Empty);
+    rpc ValidateToken(ValidateTokenRequest) returns (User);
 }

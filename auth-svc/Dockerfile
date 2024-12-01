@@ -2,11 +2,11 @@
 FROM golang:1.22.7
 
 # Set the Current Working Directory inside the container
-WORKDIR /app
+WORKDIR /app/auth-svc
 ENV PATH="/go/bin:${PATH}"
 
 # Copy go mod and sum files
-COPY ./go.mod ./go.sum ./
+COPY ./auth-svc/go.mod ./auth-svc/go.sum ./
 
 RUN export PATH="$PATH:/go/bin"
 

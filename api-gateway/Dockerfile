@@ -2,11 +2,11 @@
 FROM golang:1.22.7
 
 # Set the Current Working Directory inside the container
-WORKDIR /app
+WORKDIR /app/api-gateway
 ENV PATH="/go/bin:${PATH}"
 
 # Copy go mod and sum files
-COPY ./go.mod ./go.sum ./
+COPY ./api-gateway/go.mod ./api-gateway/go.sum ./
 
 RUN export PATH="$PATH:/go/bin"
 

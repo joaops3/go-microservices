@@ -4,4 +4,4 @@
 
 ## run container
 
-`docker exec -it go-microservices-app bash`
+`docker exec -it go-microservices-api-gateway bash`

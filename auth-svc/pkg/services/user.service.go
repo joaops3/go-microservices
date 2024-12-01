@@ -25,7 +25,7 @@ type UserServiceInterface interface {
     SignIn(context.Context, *pb.SignInRequest) (*pb.SignInResponse, error)
     UpdateUser(context.Context, *pb.User) (*pb.User, error)
     DeleteUser(context.Context, *pb.DeleteUserRequest) (*emptypb.Empty, error)
-	
+	ValidateToken(context.Context, *pb.ValidateTokenRequest) (*pb.User, error)
 }
 
 func NewUserService() UserServiceInterface {
@@ -66,17 +66,17 @@ func (s *userService) SignIn(ctx context.Context, in *pb.SignInRequest) (*pb.Sig
 		return nil, errors.New("Invalid email or password")
 	}
 
-	// token, err := generateTokenJWT(found.ID.Hex())
-	// if err != nil {
-	// 	return nil, err
-	// }
+	token, err := generateTokenJWT(found.ID.Hex())
+	if err != nil {
+		return nil, err
+	}
 
-	// resp := models.JwtResponse{
-	// 	Token: token,
-	// 	Id: found.ID.Hex(),
-	// }
+	resp := models.JwtResponse{
+		Token: token,
+		Id: found.ID.Hex(),
+	}
 
-	return &pb.SignInResponse{Name: in.Email, Email: in.Email }, nil
+	return &pb.SignInResponse{Name: resp.Token, Email: in.Email }, nil
 
 }
 
@@ -107,6 +107,15 @@ func (s *userService) UpdateUser(ctx context.Context, in *pb.User) (*pb.User, er
 	}
 
 	return &pb.User{Id: user.ID.Hex(), Name: user.Name, Email: user.Email}, nil
+}
+
+func (s *userService) ValidateToken(ctx context.Context, in *pb.ValidateTokenRequest) (*pb.User, error) {
+	u, err := s.Repository.GetById(in.Token)
+	if err != nil {
+		return nil, err
+	}
+
+	return u.ToProtoBuffer(), nil
 }
 
 func (s *userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*emptypb.Empty, error) {

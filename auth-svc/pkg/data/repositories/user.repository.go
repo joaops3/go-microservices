@@ -17,6 +17,7 @@ type UserRepository struct {
 type UserRepositoryInterface interface {
 	Create(user *models.UserModel) error
 	GetByEmail(email string) (*models.UserModel, error)
+	GetById(id string) (*models.UserModel, error)
 	UpdateUser(user *models.UserModel) (*models.UserModel, error)
 	DeleteUser(id string) error
 }
@@ -40,6 +41,22 @@ func (r *UserRepository) GetByEmail(email string) (*models.UserModel, error) {
 	data := &models.UserModel{}
 
 	err := r.ModelDb.FindOne(context.Background(), bson.D{{Key: "email", Value: email }}).Decode(data)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (r *UserRepository) GetById(id string) (*models.UserModel, error) {
+
+	data := &models.UserModel{}
+
+	err := r.ModelDb.FindOne(context.Background(), bson.D{{Key: "_id", Value: id}}).Decode(data)
 
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
