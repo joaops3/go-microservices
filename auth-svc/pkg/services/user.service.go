@@ -14,7 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type userService struct {
+type UserService struct {
 	Repository repositories.UserRepositoryInterface
 	pb.UnimplementedAuthServiceServer
 }
@@ -31,12 +31,12 @@ type UserServiceInterface interface {
 func NewUserService() UserServiceInterface {
 	collection := models.GetDbUserCollection()
 
-	return &userService{
+	return &UserService{
 		Repository: repositories.NewUserRepository(collection),
 	}
 }
 
-func (s *userService) SignUp(ctx context.Context, in *pb.SignUpRequest) (*pb.SignUpResponse, error) {
+func (s *UserService) SignUp(ctx context.Context, in *pb.SignUpRequest) (*pb.SignUpResponse, error) {
 	user := models.NewUserModel(in.Name, in.Email, in.Password)
 	hashed, err := bcrypt.GenerateFromPassword([]byte(in.Password), 10)
 	if err != nil {
@@ -53,7 +53,7 @@ func (s *userService) SignUp(ctx context.Context, in *pb.SignUpRequest) (*pb.Sig
 	return resp, nil
 }
 
-func (s *userService) SignIn(ctx context.Context, in *pb.SignInRequest) (*pb.SignInResponse, error) {
+func (s *UserService) SignIn(ctx context.Context, in *pb.SignInRequest) (*pb.SignInResponse, error) {
 	found, err := s.Repository.GetByEmail(in.Email) 
 
 	if err != nil {
@@ -81,8 +81,8 @@ func (s *userService) SignIn(ctx context.Context, in *pb.SignInRequest) (*pb.Sig
 }
 
 
-func (s *userService) UpdateUser(ctx context.Context, in *pb.User) (*pb.User, error) {
-	user, err := s.Repository.GetByEmail(in.Email)
+func (s *UserService) UpdateUser(ctx context.Context, in *pb.User) (*pb.User, error) {
+	user, err := s.Repository.GetById(in.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -109,16 +109,19 @@ func (s *userService) UpdateUser(ctx context.Context, in *pb.User) (*pb.User, er
 	return &pb.User{Id: user.ID.Hex(), Name: user.Name, Email: user.Email}, nil
 }
 
-func (s *userService) ValidateToken(ctx context.Context, in *pb.ValidateTokenRequest) (*pb.User, error) {
+func (s *UserService) ValidateToken(ctx context.Context, in *pb.ValidateTokenRequest) (*pb.User, error) {
 	u, err := s.Repository.GetById(in.Token)
 	if err != nil {
 		return nil, err
 	}
+	if u == nil {
+        return nil, errors.New("user not found")
+    }
 
 	return u.ToProtoBuffer(), nil
 }
 
-func (s *userService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*emptypb.Empty, error) {
+func (s *UserService) DeleteUser(ctx context.Context, in *pb.DeleteUserRequest) (*emptypb.Empty, error) {
 	err := s.Repository.DeleteUser(in.Id)
 	if err != nil {
 		return nil, err

@@ -12,3 +12,5 @@
 mongodb_data
 
 tmp
+
+.vscode
