@@ -18,7 +18,7 @@ func InitializeRoutes(r *gin.Engine) {
 func InitializeAuthRoutes(r *gin.Engine){
 	config := &client.Config{
 		Port:      os.Getenv("AUTH_PORT"),
-		AuthSuvUrl: os.Getenv("AUTH_SUV_URL"),
+		AuthSuvUrl: os.Getenv("AUTH_SVC_URL"),
 	}
 
 	c := client.InitServiceClient(config)
