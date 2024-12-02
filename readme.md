@@ -44,3 +44,17 @@ This project consists of an API Gateway (REST) and an Auth Service (gRPC).
 #### how to Generate pb
 
 - `protoc --go_out=. --go-grpc_out=. ./pkg/messages/*.proto`
+
+## run with k8s
+
+```bash
+docker build -f ./api-gateway/Dockerfile.prod -t go-microservices-api-gateway .
+docker build -f ./auth-svc/Dockerfile.prod -t go-microservices-auth-svc .
+
+kind load docker-image go-microservices-api-gateway
+kind load docker-image go-microservices-auth-svc
+
+kubectl apply -f ./k8s/deployment.yml
+
+kubectl port-forward svc/api-gateway 3333:3333
+```
