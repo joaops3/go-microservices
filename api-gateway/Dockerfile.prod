@@ -1,25 +1,24 @@
-
-FROM golang:1.22.7 AS builder
-
+# Build stage with smaller Golang Alpine base image
+FROM golang:1.22.7-alpine AS builder
 
 WORKDIR /app
 
 COPY ./api-gateway/go.mod ./api-gateway/go.sum ./
 
-
 RUN go mod download
 
+COPY ./api-gateway/.env /app/.env
+COPY ./api-gateway .
 
-COPY ./api-gateway/ .
+RUN go build -o ./out/dist ./cmd/main.go
 
-
-RUN go build -o ./out/dist ./api-gateway/cmd
-
-#use a smaller base image for final image
+# Final stage with Alpine image
 FROM alpine:3.14
-#copy executable from build stage
+
+# Copy the built binary from the builder stage
 COPY --from=builder /app/out/dist /app/dist
-#set working directory
+COPY --from=builder /app/.env /app/.env
+
 WORKDIR /app
-#set entrypoint for the application
+
 CMD ["/app/dist"]

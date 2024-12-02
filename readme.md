@@ -28,15 +28,19 @@ This project consists of an API Gateway (REST) and an Auth Service (gRPC).
 
 ## How to run
 
-### run container
+### run prod container
 
-- `docker compose up`
+- `docker compose -f docker-compose-prod up`
 
-### exec container
+### run dev container
+
+- `docker compose up .`
+
+#### exec container
 
 - `docker exec -it go-microservices-api-gateway bash`
 - `docker exec -it go-microservices-auth-svc bash`
 
-### how to Generate pb
+#### how to Generate pb
 
 - `protoc --go_out=. --go-grpc_out=. ./pkg/messages/*.proto`

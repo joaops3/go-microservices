@@ -1,5 +1,5 @@
 
-FROM golang:1.22.7 AS builder
+FROM golang:1.22.7-alpine AS builder
 
 
 WORKDIR /app
@@ -9,16 +9,15 @@ COPY ./auth-svc/go.mod ./auth-svc/go.sum ./
 
 RUN go mod download
 
+COPY ./auth-svc .
 
-COPY ./auth-svc/ .
-
-
-RUN go build -o ./out/dist ./auth-svc/cmd
+RUN go build -o ./out/dist ./cmd/main.go
 
 #use a smaller base image for final image
 FROM alpine:3.14
 #copy executable from build stage
 COPY --from=builder /app/out/dist /app/dist
+COPY --from=builder /app/.env /app/.env
 #set working directory
 WORKDIR /app
 #set entrypoint for the application

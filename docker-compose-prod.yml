@@ -5,7 +5,7 @@ services:
     container_name: api-gateway
     build:
       context: .
-      dockerfile: ./api-gateway/Dockerfile.dev
+      dockerfile: ./api-gateway/Dockerfile.prod
     depends_on:
       - auth-svc
     ports:
@@ -19,7 +19,7 @@ services:
     container_name: auth-svc
     build:
       context: .
-      dockerfile: ./auth-svc/Dockerfile.dev
+      dockerfile: ./auth-svc/Dockerfile.prod
     depends_on:
       - mongo
     ports:
