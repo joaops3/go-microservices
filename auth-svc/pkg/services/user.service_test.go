@@ -12,6 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -36,12 +37,12 @@ func TestSignUpUser(t *testing.T) {
 	mockRepo.AssertExpectations(t)
 }
 
-
-
-func TestSignInUser(t *testing.T) {
+func TestSignInUserShouldSuccess(t *testing.T) {
 	mockRepo := new(repositories.MockUserRepository)
-
-	mockRepo.On("Create", mock.AnythingOfType("*models.UserModel")).Return(nil)
+	userStub := models.NewUserModel("name", "test@gmail.com", "P@$$w0rd")
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("P@$$w0rd"), bcrypt.DefaultCost)
+	userStub.Password = string(hashedPassword)
+	mockRepo.On("GetByEmail", mock.AnythingOfType("string")).Return(userStub, nil)
 
 	service := &services.UserService{
 		Repository: mockRepo,
@@ -50,13 +51,35 @@ func TestSignInUser(t *testing.T) {
 
 	in := &pb.SignInRequest{
 		Email: "test@gmail.com",
-		Password: "password",
+		Password: "P@$$w0rd",
 	}
 	res, err := service.SignIn(context.Background(), in)
 
 	assert.Nil(t, err)
 	assert.NotNil(t, res)
-	mockRepo.AssertExpectations(t)
+	assert.Equal(t, userStub.Email, res.Email)
+}
+
+func TestSignInUserShouldFail(t *testing.T) {
+	mockRepo := new(repositories.MockUserRepository)
+	userStub := models.NewUserModel("name", "test@gmail.com", "P@$$w0rd")
+	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("P@$$w0rd"), bcrypt.DefaultCost)
+	userStub.Password = string(hashedPassword)
+	mockRepo.On("GetByEmail", mock.AnythingOfType("string")).Return(userStub, nil)
+
+	service := &services.UserService{
+		Repository: mockRepo,
+	}
+
+
+	in := &pb.SignInRequest{
+		Email: "test@gmail.com",
+		Password: "wrongpassword",
+	}
+	_, err := service.SignIn(context.Background(), in)
+
+	assert.NotNil(t, err)
+	assert.EqualError(t, err, "Invalid email or password")
 }
 
 func TestUpdateUser(t *testing.T){
@@ -108,21 +131,21 @@ func TestValidateToken(t *testing.T){
 	mockRepo := new(repositories.MockUserRepository)
 
 	userStub := models.NewUserModel("name", "test@gmail.com", "password")
-	mockRepo.On("GetById", mock.AnythingOfType("string")).Return(userStub, nil)
+	mockRepo.On("GetById", mock.Anything).Return(userStub, nil)
 	
 	service := &services.UserService{
 		Repository: mockRepo,
 	}
 
 	input := &pb.ValidateTokenRequest{
-		Token: "token",
+		Token: userStub.ID.Hex(),
 	}
 
 	user, err := service.ValidateToken(context.Background(), input)
-
+	
 	assert.Nil(t, err)
 	assert.NotNil(t, user)
-	assert.Equal(t, "name", user.Name)
+	assert.Equal(t, userStub.Email, user.Email)
 	mockRepo.AssertExpectations(t)
 }
 
