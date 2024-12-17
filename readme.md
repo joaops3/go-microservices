@@ -57,4 +57,6 @@ kind load docker-image go-microservices-auth-svc
 kubectl apply -f ./k8s/deployment.yml
 
 kubectl port-forward svc/api-gateway 3333:3333
+kubectl port-forward svc/auth-svc 50051:50051
+
 ```

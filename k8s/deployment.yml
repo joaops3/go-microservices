@@ -17,7 +17,8 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: go-microservices-api-gateway
+          image: go-microservices-api-gateway:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3333
 
@@ -40,7 +41,8 @@ spec:
     spec:
       containers:
         - name: auth-svc
-          image: go-microservices-auth-svc
+          image: go-microservices-auth-svc:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 50051
 
@@ -50,6 +52,7 @@ kind: Service
 metadata:
   name: api-gateway
 spec:
+  type: LoadBalancer
   selector:
     app: api-gateway
   ports:
@@ -63,6 +66,7 @@ kind: Service
 metadata:
   name: auth-svc
 spec:
+  type: LoadBalancer
   selector:
     app: auth-svc
   ports:
