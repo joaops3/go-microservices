@@ -60,6 +60,10 @@ func (s *UserService) SignIn(ctx context.Context, in *pb.SignInRequest) (*pb.Sig
 		return nil, err
 	}
 
+	if found == nil {
+		return nil, errors.New("Invalid email or password")
+	}
+
 	err = bcrypt.CompareHashAndPassword([]byte(found.Password), []byte(in.Password))
 
 	if err != nil {

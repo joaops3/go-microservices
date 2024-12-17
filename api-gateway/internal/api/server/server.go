@@ -8,7 +8,7 @@ import (
 type HttpServer struct {
 }
 
-func (s *HttpServer) Serve() error{
+func (s *HttpServer) Serve() error {
 	logger := config.GetLogger("MAIN")
 	config.LoadEnvFile()
 	
